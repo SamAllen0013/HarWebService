@@ -70,13 +70,13 @@ namespace SamAllen_Rigor_Challenge.Controllers
         [HttpPost, Route("api/UpdateHarFile")]
         public object UpdateHarFile()
         {
-            HttpRequest httpRequest = HttpContext.Current.Request;
-            NameValueCollection formVariables = httpRequest.Form;
-            string fileName = formVariables["FileName"];
-            CacheHelper cacheHelper = new CacheHelper();
-            if (cacheHelper.CheckIfItemExists(fileName) == true)
+            HttpRequest httpRequest = HttpContext.Current.Request;            
+            if (httpRequest.Files.Count == 1)
             {
-                if (httpRequest.Files.Count == 1)
+                NameValueCollection formVariables = httpRequest.Form;
+                string fileName = formVariables["FileName"];
+                CacheHelper cacheHelper = new CacheHelper();
+                if (cacheHelper.CheckIfItemExists(fileName) == true)
                 {
                     try
                     {
@@ -90,19 +90,19 @@ namespace SamAllen_Rigor_Challenge.Controllers
                         return JsonBuilder.BuildJsonResponse(e.Message);
                     }
                 }
-                else if (httpRequest.Files.Count > 1)
-                {
-                    return JsonBuilder.BuildJsonResponse("Only supports updating one file");
-                }
                 else
                 {
-                    return JsonBuilder.BuildJsonResponse("No files in request");
+                    return JsonBuilder.BuildJsonResponse("Item does not exist");
                 }
+            }
+            else if (httpRequest.Files.Count > 1)
+            {
+                return JsonBuilder.BuildJsonResponse("Only supports updating one file");
             }
             else
             {
-                return JsonBuilder.BuildJsonResponse("Item does not exist");
-            }
+                return JsonBuilder.BuildJsonResponse("No files in request");
+            }                       
         }
 
         [HttpPost, Route("api/DeleteHarFile")]
